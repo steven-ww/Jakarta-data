@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jakarta EE 11 Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .api-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .api-section h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .endpoint {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: white;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .endpoint strong {
+            color: #333;
+        }
+        .method {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jakarta EE 11 Application</h1>
+        <p>Welcome to the Jakarta EE 11 application with JPA persistence!</p>
+        
+        <div class="api-section">
+            <h2>Available REST Endpoints</h2>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/hello</strong>
+                <p>Create a casual greeting and save it to the database</p>
+                <pre>curl "http://localhost:8080/jakarta-ee-app/api/hello?name=John"</pre>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/hello/formal</strong>
+                <p>Create a formal greeting and save it to the database</p>
+                <pre>curl "http://localhost:8080/jakarta-ee-app/api/hello/formal?name=Jane"</pre>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/hello/greetings</strong>
+                <p>Get all greetings from the database</p>
+                <pre>curl "http://localhost:8080/jakarta-ee-app/api/hello/greetings"</pre>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/hello/greetings/by-name</strong>
+                <p>Get greetings by specific name</p>
+                <pre>curl "http://localhost:8080/jakarta-ee-app/api/hello/greetings/by-name?name=John"</pre>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/hello/stats</strong>
+                <p>Get greeting statistics</p>
+                <pre>curl "http://localhost:8080/jakarta-ee-app/api/hello/stats"</pre>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/hello/count</strong>
+                <p>Get greeting count for a specific name</p>
+                <pre>curl "http://localhost:8080/jakarta-ee-app/api/hello/count?name=John"</pre>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <strong>/api/hello/health</strong>
+                <p>Health check endpoint</p>
+                <pre>curl "http://localhost:8080/jakarta-ee-app/api/hello/health"</pre>
+            </div>
+        </div>
+        
+        <div class="api-section">
+            <h2>Database Configuration</h2>
+            <p>The application uses Jakarta Persistence (JPA) with EclipseLink as the provider.</p>
+            <p>By default, it's configured to use GlassFish's default datasource, but you can configure it to use any database.</p>
+            <p>For testing, an H2 in-memory database configuration is also provided.</p>
+        </div>
+        
+        <div class="api-section">
+            <h2>Features Demonstrated</h2>
+            <ul>
+                <li>Jakarta EE 11 / Java 21</li>
+                <li>JAX-RS REST endpoints</li>
+                <li>CDI (Contexts and Dependency Injection)</li>
+                <li>JPA (Jakarta Persistence) with EclipseLink</li>
+                <li>Bean Validation</li>
+                <li>JTA (Jakarta Transaction API)</li>
+                <li>Unit testing with JUnit 5 and Mockito</li>
+                <li>Integration testing with Arquillian</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -102,7 +103,7 @@ class HelloServiceTest {
             new Greeting("John", "Hello, John!", Greeting.GreetingType.CASUAL),
             new Greeting("Jane", "Good day, Jane!", Greeting.GreetingType.FORMAL)
         );
-        when(greetingRepository.findAll()).thenReturn(greetings);
+        when(greetingRepository.findAll()).thenReturn(greetings.stream());
 
         // When
         List<Greeting> result = helloService.getAllGreetings();
@@ -138,14 +139,20 @@ class HelloServiceTest {
     void testGetGreetingStats() {
         // Given
         long totalCount = 5L;
-        when(greetingRepository.count()).thenReturn(totalCount);
+        when(greetingRepository.findAll()).thenReturn(Stream.of(
+            new Greeting("Test1", "Hello, Test1!", Greeting.GreetingType.CASUAL),
+            new Greeting("Test2", "Hello, Test2!", Greeting.GreetingType.CASUAL),
+            new Greeting("Test3", "Hello, Test3!", Greeting.GreetingType.FORMAL),
+            new Greeting("Test4", "Hello, Test4!", Greeting.GreetingType.FORMAL),
+            new Greeting("Test5", "Hello, Test5!", Greeting.GreetingType.CASUAL)
+        ));
 
         // When
         HelloService.GreetingStats result = helloService.getGreetingStats();
 
         // Then
         assertEquals(totalCount, result.getTotalGreetings());
-        verify(greetingRepository, times(1)).count();
+        verify(greetingRepository, times(1)).findAll();
     }
 
     @Test

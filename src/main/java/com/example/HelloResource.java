@@ -4,17 +4,20 @@ import com.example.entity.Greeting;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
- * Sample REST resource demonstrating Jakarta EE 11 features with JPA persistence
+ * Sample REST resource demonstrating Jakarta EE 11 features with Jakarta Data persistence
  */
 @Path("/hello")
 @ApplicationScoped
@@ -106,6 +109,38 @@ public class HelloResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response health() {
         return Response.ok(new HealthResponse("UP", "Jakarta EE 11 Application")).build();
+    }
+    
+    @GET
+    @Path("/greetings/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getGreetingById(@PathParam("id") Long id) {
+        logger.info("Get greeting by ID endpoint called with ID: " + id);
+        
+        Optional<Greeting> greeting = helloService.getGreetingById(id);
+        
+        if (greeting.isPresent()) {
+            return Response.ok(greeting.get()).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ErrorResponse("Greeting not found with ID: " + id)).build();
+        }
+    }
+    
+    @DELETE
+    @Path("/greetings/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteGreeting(@PathParam("id") Long id) {
+        logger.info("Delete greeting endpoint called with ID: " + id);
+        
+        boolean deleted = helloService.deleteGreeting(id);
+        
+        if (deleted) {
+            return Response.ok(new SuccessResponse("Greeting deleted successfully")).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ErrorResponse("Greeting not found with ID: " + id)).build();
+        }
     }
 
     // Response DTOs
@@ -218,6 +253,34 @@ public class HelloResource {
 
         public void setCount(long count) {
             this.count = count;
+        }
+    }
+    
+    public static class SuccessResponse {
+        private String message;
+        private long timestamp;
+        
+        public SuccessResponse() {}
+        
+        public SuccessResponse(String message) {
+            this.message = message;
+            this.timestamp = System.currentTimeMillis();
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+        
+        public void setMessage(String message) {
+            this.message = message;
+        }
+        
+        public long getTimestamp() {
+            return timestamp;
+        }
+        
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
         }
     }
 }

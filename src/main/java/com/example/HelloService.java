@@ -5,11 +5,14 @@ import com.example.repository.GreetingRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * Service class demonstrating Jakarta EE CDI and business logic with JPA persistence
+ * Service class demonstrating Jakarta EE CDI and business logic with Jakarta Data persistence
  */
 @ApplicationScoped
 public class HelloService {
@@ -55,7 +58,7 @@ public class HelloService {
      */
     public List<Greeting> getAllGreetings() {
         logger.info("Retrieving all greetings from database");
-        return greetingRepository.findAll();
+        return greetingRepository.findAll().collect(Collectors.toList());
     }
     
     /**
@@ -71,7 +74,7 @@ public class HelloService {
      */
     public GreetingStats getGreetingStats() {
         logger.info("Retrieving greeting statistics");
-        long totalGreetings = greetingRepository.count();
+        long totalGreetings = greetingRepository.findAll().count();
         return new GreetingStats(totalGreetings);
     }
     
@@ -81,6 +84,72 @@ public class HelloService {
     public long getGreetingCountByName(String name) {
         logger.info("Getting greeting count for name: " + name);
         return greetingRepository.countByName(name);
+    }
+    
+    /**
+     * Get greeting by ID
+     */
+    public Optional<Greeting> getGreetingById(Long id) {
+        logger.info("Retrieving greeting by ID: " + id);
+        return greetingRepository.findById(id);
+    }
+    
+    /**
+     * Delete greeting by ID
+     */
+    public boolean deleteGreeting(Long id) {
+        logger.info("Deleting greeting by ID: " + id);
+        Optional<Greeting> greeting = greetingRepository.findById(id);
+        if (greeting.isPresent()) {
+            greetingRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Get ordered greetings by creation date (newest first)
+     * Demonstrates Jakarta Data derived query methods
+     */
+    public List<Greeting> getOrderedGreetings() {
+        logger.info("Retrieving greetings ordered by creation date");
+        return greetingRepository.findAllByOrderByCreatedAtDesc();
+    }
+    
+    /**
+     * Search greetings by name containing a substring (case-insensitive)
+     * Demonstrates Jakarta Data derived query methods with conditions
+     */
+    public List<Greeting> searchGreetingsByName(String nameSubstring) {
+        logger.info("Searching greetings by name containing: " + nameSubstring);
+        return greetingRepository.findByNameContainingIgnoreCase(nameSubstring);
+    }
+    
+    /**
+     * Get greetings by name prefix using custom query
+     * Demonstrates Jakarta Data custom @Query annotation
+     */
+    public List<Greeting> getGreetingsByNamePrefix(String prefix) {
+        logger.info("Getting greetings by name prefix: " + prefix);
+        return greetingRepository.findByNamePrefix(prefix);
+    }
+    
+    /**
+     * Check if a greeting exists for a given name
+     * Demonstrates Jakarta Data exists query methods
+     */
+    public boolean greetingExistsForName(String name) {
+        logger.info("Checking if greeting exists for name: " + name);
+        return greetingRepository.existsByName(name);
+    }
+    
+    /**
+     * Delete all greetings for a specific name
+     * Demonstrates Jakarta Data delete methods
+     */
+    public void deleteGreetingsByName(String name) {
+        logger.info("Deleting all greetings for name: " + name);
+        greetingRepository.deleteByName(name);
     }
     
     // Inner class for statistics

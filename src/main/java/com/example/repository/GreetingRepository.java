@@ -1,118 +1,64 @@
 package com.example.repository;
 
 import com.example.entity.Greeting;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
+import jakarta.data.repository.CrudRepository;
+import jakarta.data.repository.Query;
+import jakarta.data.repository.Repository;
+import jakarta.data.repository.Delete;
+import jakarta.data.repository.Save;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 /**
- * Repository class for Greeting entity operations
+ * Jakarta Data Repository interface for Greeting entity operations
+ * This interface automatically provides CRUD operations without implementation
  */
-@ApplicationScoped
-public class GreetingRepository {
-
-    @PersistenceContext(unitName = "default")
-    private EntityManager entityManager;
-
-    @Inject
-    private Logger logger;
-
-    /**
-     * Save a greeting to the database
-     */
-    @Transactional
-    public Greeting save(Greeting greeting) {
-        logger.info("Saving greeting: " + greeting);
-        
-        if (greeting.getId() == null) {
-            entityManager.persist(greeting);
-            logger.info("Greeting persisted with ID: " + greeting.getId());
-        } else {
-            greeting = entityManager.merge(greeting);
-            logger.info("Greeting updated with ID: " + greeting.getId());
-        }
-        
-        return greeting;
-    }
-
-    /**
-     * Find greeting by ID
-     */
-    public Optional<Greeting> findById(Long id) {
-        logger.info("Finding greeting by ID: " + id);
-        Greeting greeting = entityManager.find(Greeting.class, id);
-        return Optional.ofNullable(greeting);
-    }
-
-    /**
-     * Find all greetings
-     */
-    public List<Greeting> findAll() {
-        logger.info("Finding all greetings");
-        TypedQuery<Greeting> query = entityManager.createNamedQuery("Greeting.findAll", Greeting.class);
-        return query.getResultList();
-    }
+@Repository
+public interface GreetingRepository extends CrudRepository<Greeting, Long> {
 
     /**
      * Find greetings by name
+     * Jakarta Data automatically implements this method based on the method name
      */
-    public List<Greeting> findByName(String name) {
-        logger.info("Finding greetings by name: " + name);
-        TypedQuery<Greeting> query = entityManager.createNamedQuery("Greeting.findByName", Greeting.class);
-        query.setParameter("name", name);
-        return query.getResultList();
-    }
+    List<Greeting> findByName(String name);
 
     /**
      * Count greetings by name
+     * Jakarta Data automatically implements this method based on the method name
      */
-    public Long countByName(String name) {
-        logger.info("Counting greetings by name: " + name);
-        TypedQuery<Long> query = entityManager.createNamedQuery("Greeting.countByName", Long.class);
-        query.setParameter("name", name);
-        return query.getSingleResult();
-    }
+    long countByName(String name);
+
 
     /**
-     * Find greetings with pagination
+     * Find greetings containing name (case-insensitive)
+     * Jakarta Data automatically implements this method based on the method name
      */
-    public List<Greeting> findAll(int firstResult, int maxResults) {
-        logger.info("Finding greetings with pagination: firstResult=" + firstResult + ", maxResults=" + maxResults);
-        TypedQuery<Greeting> query = entityManager.createNamedQuery("Greeting.findAll", Greeting.class);
-        query.setFirstResult(firstResult);
-        query.setMaxResults(maxResults);
-        return query.getResultList();
-    }
+    List<Greeting> findByNameContainingIgnoreCase(String name);
 
     /**
-     * Delete greeting by ID
+     * Find greetings ordered by creation timestamp
+     * Jakarta Data automatically implements this method based on the method name
      */
-    @Transactional
-    public boolean deleteById(Long id) {
-        logger.info("Deleting greeting by ID: " + id);
-        Optional<Greeting> greeting = findById(id);
-        if (greeting.isPresent()) {
-            entityManager.remove(greeting.get());
-            logger.info("Greeting deleted with ID: " + id);
-            return true;
-        }
-        logger.warning("Greeting not found for deletion with ID: " + id);
-        return false;
-    }
+    List<Greeting> findAllByOrderByCreatedAtDesc();
 
     /**
-     * Count total greetings
+     * Custom query to find greetings by name prefix
+     * Uses @Query annotation for custom JPQL
      */
-    public Long count() {
-        logger.info("Counting total greetings");
-        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(g) FROM Greeting g", Long.class);
-        return query.getSingleResult();
-    }
+    @Query("SELECT g FROM Greeting g WHERE g.name LIKE :namePrefix%")
+    List<Greeting> findByNamePrefix(String namePrefix);
+
+    /**
+     * Delete greetings by name
+     * Jakarta Data automatically implements this method based on the method name
+     */
+    @Delete
+    void deleteByName(String name);
+
+    /**
+     * Check if greeting exists by name
+     * Jakarta Data automatically implements this method based on the method name
+     */
+    boolean existsByName(String name);
 }
